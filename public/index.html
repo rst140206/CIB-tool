@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CIB 情景分析工作台</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a2b4a;
+  --navy2:#243558;
+  --navy3:#1e3a6e;
+  --blue:#3b6fd4;
+  --blue-light:#e8f0fc;
+  --blue-mid:#c5d8f8;
+  --teal:#4db8a8;
+  --bg:#f5f7fa;
+  --bg2:#eef1f6;
+  --paper:#ffffff;
+  --ink:#1a1f2e;
+  --ink2:#4a5568;
+  --ink3:#8896a5;
+  --border:#e2e8f0;
+  --border2:#d1dbe8;
+  --accent:#2563eb;
+  --accent-h:#1d4ed8;
+  --green:#16a34a;
+  --green-bg:rgba(22,163,74,0.08);
+  --orange:#ea580c;
+  --orange-bg:rgba(234,88,12,0.08);
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 1px 2px rgba(0,0,0,0.04);
+  --shadow2:0 4px 16px rgba(0,0,0,0.08);
+  --shadow3:0 8px 32px rgba(0,0,0,0.12);
+  --r:8px;
+  --font:'Inter','Noto Sans SC',sans-serif;
+}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* ── COVER PAGE ─────────────────────────────────────────────── */
+#coverPage{position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column;background:var(--navy)}
+#coverPage.hidden{display:none}
+.cover-nav{height:56px;display:flex;align-items:center;padding:0 40px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.cover-logo{display:flex;align-items:center;gap:10px}
+.cover-logo-mark{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--teal));border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;letter-spacing:-0.5px}
+.cover-logo-text{font-size:15px;font-weight:600;color:#fff;letter-spacing:0.3px}
+.cover-logo-sub{font-size:11px;color:rgba(255,255,255,0.5);font-weight:400;margin-left:4px}
+.cover-hero{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;position:relative;overflow:hidden}
+.cover-hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(59,111,212,0.15) 0%,transparent 70%);pointer-events:none}
+.cover-hero::after{content:'';position:absolute;bottom:-100px;left:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(77,184,168,0.1) 0%,transparent 70%);pointer-events:none}
+.cover-content{max-width:760px;text-align:center;position:relative;z-index:1}
+.cover-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;background:rgba(59,111,212,0.2);border:1px solid rgba(59,111,212,0.4);border-radius:20px;font-size:11px;font-weight:500;color:rgba(255,255,255,0.8);letter-spacing:1px;text-transform:uppercase;margin-bottom:24px}
+.cover-title{font-size:44px;font-weight:700;color:#fff;line-height:1.15;letter-spacing:-0.5px;margin-bottom:12px}
+.cover-title span{color:var(--teal)}
+.cover-subtitle{font-size:16px;color:rgba(255,255,255,0.6);font-weight:300;margin-bottom:40px;line-height:1.7}
+.cover-intro{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px;text-align:left}
+.intro-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r);padding:18px 20px;transition:background .2s}
+.intro-card:hover{background:rgba(255,255,255,0.1)}
+.intro-card-icon{font-size:22px;margin-bottom:8px}
+.intro-card-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:6px}
+.intro-card-desc{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6}
+.cover-steps{display:flex;align-items:center;margin-bottom:40px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r);padding:16px 20px;flex-wrap:wrap;gap:8px;justify-content:center}
+.cover-step{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,0.6)}
+.cover-step-num{width:20px;height:20px;border-radius:50%;background:rgba(59,111,212,0.4);color:#fff;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cover-step-arrow{color:rgba(255,255,255,0.2);font-size:14px;margin:0 2px}
+.cover-cta{display:flex;gap:12px;justify-content:center}
+.btn-cta-primary{padding:13px 32px;background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:var(--font)}
+.btn-cta-primary:hover{background:var(--accent-h);transform:translateY(-1px);box-shadow:0 4px 16px rgba(37,99,235,0.4)}
+.btn-cta-secondary{padding:13px 32px;background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;font-family:var(--font)}
+.btn-cta-secondary:hover{background:rgba(255,255,255,0.14)}
+.cover-footer{padding:16px 40px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center}
+.cover-footer-text{font-size:11px;color:rgba(255,255,255,0.3)}
+
+/* ── MAIN APP ────────────────────────────────────────────────── */
+#mainApp{display:none;min-height:100vh;flex-direction:column}
+#mainApp.visible{display:flex}
+
+/* TOPNAV */
+.topnav{height:56px;background:var(--navy);display:flex;align-items:center;padding:0 32px;gap:24px;position:sticky;top:0;z-index:100;box-shadow:0 1px 0 rgba(255,255,255,0.06)}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;margin-right:16px}
+.nav-logo-mark{width:28px;height:28px;background:linear-gradient(135deg,var(--blue),var(--teal));border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff}
+.nav-logo-text{font-size:14px;font-weight:600;color:#fff}
+.nav-status{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,0.5)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#64748b;flex-shrink:0}
+.status-dot.ready{background:#22c55e}
+.status-dot.loading{background:#f59e0b;animation:blink .9s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* SHELL */
+.shell{flex:1;max-width:1080px;margin:0 auto;padding:32px 24px 80px;width:100%}
+
+/* STEPS BAR */
+.steps-bar{display:flex;margin-bottom:32px;background:var(--paper);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.step-item{flex:1;padding:11px 6px;text-align:center;font-size:11px;font-weight:500;color:var(--ink3);border-right:1px solid var(--border);cursor:default;transition:all .2s;line-height:1.3}
+.step-item:last-child{border-right:none}
+.step-item .snum{display:block;font-size:15px;font-weight:700;color:var(--border2);margin-bottom:2px;transition:color .2s}
+.step-item.active{background:var(--accent);color:#fff}
+.step-item.active .snum{color:rgba(255,255,255,0.6)}
+.step-item.done{background:var(--bg);color:var(--ink2);cursor:pointer}
+.step-item.done:hover{background:var(--blue-light)}
+.step-item.done .snum{color:var(--accent)}
+
+/* CARDS */
+.card{background:var(--paper);border:1px solid var(--border);border-radius:var(--r);padding:28px 32px;margin-bottom:20px;box-shadow:var(--shadow)}
+.card-title{font-size:18px;font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:10px;color:var(--ink)}
+.card-title .step-badge{background:var(--accent);color:#fff;font-size:10px;padding:2px 8px;border-radius:4px;font-weight:500;letter-spacing:.3px}
+.card-subtitle{color:var(--ink3);font-size:13px;margin-bottom:20px;font-weight:400}
+
+/* INPUTS */
+input[type=text],textarea,select{width:100%;padding:9px 13px;border:1px solid var(--border);border-radius:6px;background:var(--paper);font-family:var(--font);font-size:13px;color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+input[type=text]:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,0.1)}
+textarea{resize:vertical;min-height:60px}
+
+/* PROGRESS BOX — replaces stream-box */
+.progress-box{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:14px}
+.progress-box-label{font-size:12px;color:var(--ink3);margin-bottom:8px}
+.progress-bar-outer{background:var(--border);border-radius:4px;height:6px;overflow:hidden;margin-bottom:6px}
+.progress-bar-inner{height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));border-radius:4px;width:0%;transition:width .3s ease}
+.progress-status{font-size:12px;color:var(--ink2);font-weight:500}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:6px;border:none;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:500;transition:all .18s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-h);transform:translateY(-1px);box-shadow:0 3px 10px rgba(37,99,235,.3)}
+.btn-secondary{background:var(--bg);color:var(--ink2);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--bg2)}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:#15803d}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-xs{padding:3px 8px;font-size:11px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.loading-pulse{display:inline-flex;align-items:center;gap:6px;color:var(--ink3);font-size:13px}
+.loading-pulse::before{content:'';width:13px;height:13px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* DESC GRID */
+.desc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:18px}
+.desc-card{border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;background:var(--bg);position:relative;cursor:pointer;transition:all .18s}
+.desc-card:hover{border-color:var(--blue-mid);box-shadow:var(--shadow)}
+.desc-card.selected{border-color:var(--accent);background:var(--blue-light)}
+.desc-card-header{display:flex;align-items:center;gap:10px;margin-bottom:6px;margin-right:24px}
+.desc-letter{width:28px;height:28px;border-radius:6px;background:var(--navy);color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.desc-card.selected .desc-letter{background:var(--accent)}
+.desc-card-name{font-weight:600;font-size:13px;color:var(--ink)}
+.desc-card-desc{font-size:12px;color:var(--ink3);line-height:1.5}
+.select-check{position:absolute;top:10px;right:10px;width:18px;height:18px;border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.desc-card.selected .select-check{background:var(--accent);border-color:var(--accent)}
+.desc-card.selected .select-check::after{content:'✓';color:#fff;font-size:10px}
+
+/* VARIANTS */
+.variant-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;border:1px solid var(--border);background:var(--bg);color:var(--ink2);margin:2px;font-weight:500}
+.variant-tag.v0{border-color:#fca5a5;color:#dc2626;background:#fef2f2}
+.variant-tag.v1{border-color:#93c5fd;color:#2563eb;background:#eff6ff}
+.variant-tag.v2{border-color:#86efac;color:#16a34a;background:#f0fdf4}
+
+/* PAIRS */
+.pair-grid{display:grid;gap:7px}
+.pair-row{display:flex;align-items:flex-start;gap:12px;padding:10px 14px;border:1px solid var(--border);border-radius:6px;background:var(--bg)}
+.pair-row.has-influence{border-color:var(--blue-mid);background:var(--blue-light)}
+.pair-badge{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;background:var(--bg2);color:var(--ink2);white-space:nowrap}
+.pair-badge.yes{background:var(--blue-light);color:var(--accent)}
+.pair-badge.no{background:var(--bg2);color:var(--ink3)}
+.pair-reason{font-size:12px;color:var(--ink3);margin-top:4px;line-height:1.5}
+.influence-filter{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.filter-btn{padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg);font-size:12px;cursor:pointer;transition:all .15s;color:var(--ink2)}
+.filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* MATRIX */
+.matrix-wrap{overflow-x:auto;margin-bottom:14px}
+.cib-matrix{border-collapse:collapse;font-size:11px}
+.cib-matrix th,.cib-matrix td{border:1px solid var(--border)}
+.cib-matrix .corner{min-width:120px;padding:7px 10px;font-size:10px;color:var(--ink3);vertical-align:bottom;text-align:right;background:var(--bg)}
+.cib-matrix .col-header{min-width:44px;padding:4px 3px;text-align:center;background:var(--bg2);font-size:10px;font-weight:500;vertical-align:bottom;line-height:1.3}
+.cib-matrix .col-header .cname{color:var(--ink3);font-size:9px;font-weight:400}
+.cib-matrix .row-header{padding:5px 10px;background:var(--bg2);font-size:11px;min-width:120px;vertical-align:middle;line-height:1.3}
+.cib-matrix .row-header .cname{color:var(--ink3);font-size:9px;display:block}
+.ci-cell{width:44px;height:30px;padding:1px}
+.ci-input{width:100%;height:100%;border:none;text-align:center;font-size:12px;font-weight:600;background:var(--bg);color:var(--ink);outline:none;cursor:pointer;transition:background .15s;border-radius:2px}
+.ci-input:focus{background:var(--blue-light);color:var(--accent)}
+.ci-input.pos{background:#dcfce7;color:#16a34a}
+.ci-input.neg{background:#fee2e2;color:#dc2626}
+.ci-input.zero{color:var(--border2)}
+.ci-diag{width:44px;height:30px;background:var(--bg2);text-align:center;line-height:30px;font-size:10px;color:var(--border2)}
+.ci-null{width:44px;height:30px;background:var(--bg2);text-align:center;line-height:30px;font-size:12px;color:var(--border2)}
+.matrix-legend{display:flex;gap:14px;font-size:12px;color:var(--ink3);align-items:center;flex-wrap:wrap;margin-top:8px}
+.legend-item{display:flex;align-items:center;gap:4px}
+.legend-box{width:12px;height:12px;border-radius:2px}
+
+/* SCENARIOS */
+.scenario-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.scenario-card{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--paper);box-shadow:var(--shadow);transition:all .2s}
+.scenario-card:hover{transform:translateY(-2px);box-shadow:var(--shadow2)}
+.scenario-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg)}
+.scenario-num{font-size:20px;font-weight:700;color:var(--accent)}
+.scenario-title{font-weight:600;font-size:13px;color:var(--ink)}
+.scenario-score{margin-left:auto;font-size:11px;padding:2px 8px;border-radius:4px;background:var(--blue-light);color:var(--accent);font-weight:500}
+.scenario-body{padding:14px 16px}
+.state-row{display:flex;gap:8px;align-items:center;font-size:12px;margin-bottom:5px}
+.state-desc{color:var(--ink3);min-width:80px;font-weight:500;font-size:11px}
+.state-val{font-weight:500;padding:2px 8px;border-radius:3px;font-size:11px}
+.state-val.v0{background:#fee2e2;color:#dc2626}
+.state-val.v1{background:#eff6ff;color:#2563eb}
+.state-val.v2{background:#f0fdf4;color:#16a34a}
+.scenario-story{font-size:12px;color:var(--ink2);line-height:1.65;border-top:1px solid var(--border);padding-top:10px;margin-top:8px}
+
+/* NOTICES */
+.notice{padding:11px 14px;border-radius:6px;font-size:12px;margin-bottom:14px;display:flex;gap:8px;line-height:1.5;align-items:flex-start}
+.notice-info{background:#eff6ff;border:1px solid #bfdbfe;color:var(--ink2)}
+.notice-success{background:#f0fdf4;border:1px solid #bbf7d0;color:var(--ink2)}
+.notice-warn{background:#fff7ed;border:1px solid #fed7aa;color:var(--ink2)}
+.section-sep{border:none;border-top:1px solid var(--border);margin:20px 0}
+.custom-desc-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+
+/* TRANSITION STEP */
+.trans-step{display:flex;gap:14px;padding:14px 16px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);margin-bottom:8px}
+.trans-step-num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;margin-top:2px}
+.trans-detail{display:grid;gap:5px;font-size:12px;margin-top:6px}
+.trans-detail-row{padding:7px 10px;border-radius:4px;line-height:1.5}
+.trans-why{background:#eff6ff;border-left:3px solid var(--accent)}
+.trans-action{background:#f0fdf4;border-left:3px solid var(--green)}
+.trans-cascade{background:#fff7ed;border-left:3px solid var(--orange)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp .28s ease both}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div id="coverPage">
+  <div class="cover-nav">
+    <div class="cover-logo">
+      <div class="cover-logo-mark">CIB</div>
+      <span class="cover-logo-text">情景分析工作台</span>
+      <span class="cover-logo-sub">Cross-Impact Balances</span>
+    </div>
+  </div>
+  <div class="cover-hero">
+    <div class="cover-content">
+      <div class="cover-title">交叉影响平衡<br><span>情景分析</span>工作台</div>
+      <div class="cover-subtitle">Cross-Impact Balances · 系统性未来情景构建与演替路径分析</div>
+      <div class="cover-intro">
+        <div class="intro-card">
+          <div class="intro-card-icon">🔗</div>
+          <div class="intro-card-title">什么是 CIB？</div>
+          <div class="intro-card-desc">交叉影响平衡（Cross-Impact Balances）是由 Weimer-Jehle 开发的系统性情景分析方法，通过量化描述符之间的相互影响关系，从所有可能的未来组合中筛选出内部逻辑自洽的情景集合。</div>
+        </div>
+        <div class="intro-card">
+          <div class="intro-card-icon">📐</div>
+          <div class="intro-card-title">核心原理</div>
+          <div class="intro-card-desc">用户定义若干"描述符"（关键不确定性维度），每个描述符有 3 个互斥状态。CIB 矩阵量化所有描述符对之间的相互影响（-3 至 +3），一致性算法筛选出各描述符状态彼此强化、无内在矛盾的情景组合。</div>
+        </div>
+        <div class="intro-card">
+          <div class="intro-card-icon">🧭</div>
+          <div class="intro-card-title">演替路径分析</div>
+          <div class="intro-card-desc">在一致性情景基础上，本工具进一步实现 CIB 干预分析：通过模拟对每个描述符施加干预的效果，识别从当前现实状态向理想未来情景转变的最优路径与优先行动顺序。</div>
+        </div>
+      </div>
+      <div class="cover-steps">
+        <div class="cover-step"><div class="cover-step-num">1</div>设定主题</div>
+        <div class="cover-step-arrow">›</div>
+        <div class="cover-step"><div class="cover-step-num">2</div>选择描述符</div>
+        <div class="cover-step-arrow">›</div>
+        <div class="cover-step"><div class="cover-step-num">3</div>定义状态</div>
+        <div class="cover-step-arrow">›</div>
+        <div class="cover-step"><div class="cover-step-num">4</div>判断影响关系</div>
+        <div class="cover-step-arrow" style="flex-basis:100%;text-align:center;opacity:0">›</div>
+        <div class="cover-step"><div class="cover-step-num">5</div>填写 CIB 矩阵</div>
+        <div class="cover-step-arrow">›</div>
+        <div class="cover-step"><div class="cover-step-num">6</div>生成一致性情景</div>
+        <div class="cover-step-arrow">›</div>
+        <div class="cover-step"><div class="cover-step-num">7</div>演替路径分析</div>
+      </div>
+      <div class="cover-cta">
+        <button class="btn-cta-primary" onclick="startApp()">开始分析 →</button>
+        <button class="btn-cta-secondary" onclick="document.getElementById('methodModal').style.display='flex'">了解方法论</button>
+      </div>
+    </div>
+  </div>
+  <div class="cover-footer">
+    <div class="cover-footer-text">基于 Weimer-Jehle, W. (2023). Cross-Impact Balances for Scenario Analysis. Springer.</div>
+    <div class="cover-footer-text">数据处理全程在本地完成，不存储任何用户数据</div>
+  </div>
+</div>
+
+<!-- 方法论弹窗 -->
+<div id="methodModal" style="display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;padding:24px" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:var(--paper);border-radius:12px;max-width:640px;width:100%;max-height:80vh;overflow-y:auto;padding:32px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h2 style="font-size:18px;font-weight:700">CIB 方法论简介</h2>
+      <button onclick="document.getElementById('methodModal').style.display='none'" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink3)">×</button>
+    </div>
+    <div style="font-size:13px;color:var(--ink2);line-height:1.8;display:grid;gap:14px">
+      <div><strong style="color:var(--ink)">描述符（Descriptors）</strong><br>CIB 分析的基本单元，代表影响未来发展的关键不确定性维度（如政策力度、技术成熟度等）。每个描述符定义 3 个互斥且完整的状态，覆盖从低到高或不同方向的可能性。</div>
+      <div><strong style="color:var(--ink)">交叉影响矩阵（Cross-Impact Matrix）</strong><br>核心数据结构。矩阵中每个格子 scores[i][j] 表示：当来源描述符处于状态 i 时，对目标描述符处于状态 j 的影响强度（+3 强烈促进，-3 强烈阻碍）。矩阵中只有被判断为存在直接因果关系的描述符对才需要填写。</div>
+      <div><strong style="color:var(--ink)">一致性情景（Consistent Scenarios）</strong><br>对所有 3ⁿ 种描述符状态组合进行一致性检验：计算每个描述符所受到的"影响平衡"（其他所有描述符对其的综合影响），若选定状态在平衡中占优（与其他描述符的影响方向相符），则认为该情景具有内部一致性。</div>
+      <div><strong style="color:var(--ink)">干预分析（Intervention Analysis）</strong><br>通过模拟"强制将某描述符调整为目标状态"的效果，重新计算在此干预下哪些情景组合仍然一致，以及这些情景与理想情景的距离。依次测试所有需要改变的描述符，找出最能推动系统向理想情景靠近的优先干预点，形成演替路径。</div>
+      <div style="padding:12px 14px;background:var(--blue-light);border-radius:6px;border-left:3px solid var(--accent)"><strong>参考文献：</strong>Weimer-Jehle, W. (2023). <em>Cross-Impact Balances (CIB) for Scenario Analysis: Fundamentals and Implementation</em>. Springer Contributions to Management Science.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp">
+  <nav class="topnav">
+    <a class="nav-logo" href="#" onclick="backToCover();return false;">
+      <div class="nav-logo-mark">CIB</div>
+      <span class="nav-logo-text">情景分析工作台</span>
+    </a>
+    <div class="nav-status">
+      <div class="status-dot ready" id="statusDot"></div>
+      <span id="statusText">就绪</span>
+    </div>
+  </nav>
+  <div class="shell">
+    <div class="steps-bar" id="stepsBar">
+      <div class="step-item active" data-step="1"><span class="snum">①</span>情景主题</div>
+      <div class="step-item" data-step="2"><span class="snum">②</span>描述符选择</div>
+      <div class="step-item" data-step="3"><span class="snum">③</span>状态定义</div>
+      <div class="step-item" data-step="4"><span class="snum">④</span>影响关系</div>
+      <div class="step-item" data-step="5"><span class="snum">⑤</span>CIB矩阵</div>
+      <div class="step-item" data-step="6"><span class="snum">⑥</span>情景生成</div>
+      <div class="step-item" data-step="7"><span class="snum">⑦</span>演替路径</div>
+    </div>
+    <div id="appContent"></div>
+  </div>
+</div>
+
+<script>
+function startApp(){document.getElementById('coverPage').classList.add('hidden');document.getElementById('mainApp').classList.add('visible');render();}
+function backToCover(){document.getElementById('coverPage').classList.remove('hidden');document.getElementById('mainApp').classList.remove('visible');}
+window.startApp=startApp;
+window.backToCover=backToCover;
+
+// ════════════════════════════════════════════════════════════
+// CONFIG — 在这里填入你的 DeepSeek API Key
+// ════════════════════════════════════════════════════════════
+// 后端代理地址 — 部署到 Vercel 后填入你的域名，本地开发时保持 /api/chat
+const API_ENDPOINT = "/api/chat";
+const DEEPSEEK_MODEL = "deepseek-chat";
+
+// ── STATE ────────────────────────────────────────────────────
+const S = {
+  step:1, topic:'', topicContext:'',
+  descriptors:[], selectedDescs:[],
+  influences:[], matrix:{}, matrixReasons:{}, scenarios:[],
+  currentScenarioIdx: -1,   // 现实情景
+  idealScenarioIdx:   -1,   // 理想情景
+  transitionAnalysis: null, // 演替分析结果
+};
+
+// ── API 调用（流式）────────────────────────────────────────────
+async function callAI(messages, maxTokens=2000, onChunk=null) {
+  const dot=document.getElementById('statusDot'), txt=document.getElementById('statusText');
+  dot.className='status-dot loading'; txt.textContent='推理中…';
+  let fullText='';
+  try {
+    const resp = await fetch(API_ENDPOINT, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({model:DEEPSEEK_MODEL, max_tokens:maxTokens, temperature:0.3,
+        stream: !!onChunk, messages})
+    });
+    if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e?.error?.message||'HTTP '+resp.status);}
+    if(onChunk){
+      const reader=resp.body.getReader(), dec=new TextDecoder(); let buf='';
+      while(true){
+        const{done,value}=await reader.read(); if(done)break;
+        buf+=dec.decode(value,{stream:true});
+        const lines=buf.split('\n'); buf=lines.pop();
+        for(const line of lines){
+          if(!line.startsWith('data:'))continue;
+          const d=line.slice(5).trim(); if(d==='[DONE]')break;
+          try{const j=JSON.parse(d);const delta=j.choices[0]?.delta?.content||'';fullText+=delta;onChunk(fullText);}catch(_){}
+        }
+      }
+    } else {
+      const data=await resp.json();
+      fullText=data.choices[0]?.message?.content||'';
+    }
+  } finally { dot.className='status-dot ready'; txt.textContent='模型已就绪'; }
+  return fullText;
+}
+
+// ── 健壮JSON解析 ──────────────────────────────────────────────
+function robustParseJSON(text) {
+  let s = text.replace(/```json\s*/gi,'').replace(/```\s*/g,'').trim();
+  s = s.replace(/^[^{]*/,'').trim();
+  if(!s.startsWith('{')) throw new Error('未找到JSON');
+  try { return JSON.parse(s); } catch(_) {}
+  let depth=0, end=-1;
+  for(let i=0;i<s.length;i++){
+    if(s[i]==='{')depth++; else if(s[i]==='}'){depth--;if(depth===0){end=i;break;}}
+  }
+  if(end>0){try{return JSON.parse(s.slice(0,end+1));}catch(_){}}
+  const closings=[']}','"]}','}]}','"}}','"]}}'];
+  for(let i=s.length-1;i>s.length/4;i--){
+    if(s[i]===','){for(const c of closings){try{return JSON.parse(s.slice(0,i)+c);}catch(_){}}}
+  }
+  for(const c of closings){try{return JSON.parse(s+c);}catch(_){}}
+  throw new Error('JSON解析失败，请重试');
+}
+
+function parseScoresOutput(text) {
+  try{return robustParseJSON(text);}catch(_){}
+  const nums=text.match(/-?[0-3]/g)||[];
+  if(nums.length>=9){
+    const scores=[[0,1,2].map(i=>parseInt(nums[i])),[3,4,5].map(i=>parseInt(nums[i])),[6,7,8].map(i=>parseInt(nums[i]))];
+    const rm=text.match(/"reason"\s*:\s*"([^"]+)"/) || text.match(/reason[：:][""]?([^"\n，,}]{5,40})/);
+    return{scores,reason:rm?rm[1]:'自动打分'};
+  }
+  throw new Error('无法提取分数矩阵');
+}
+
+// ── RENDER ROUTER ─────────────────────────────────────────────
+function render() {
+  const el=document.getElementById('appContent');
+  document.querySelectorAll('.step-item').forEach(s=>{
+    const n=parseInt(s.dataset.step);
+    s.className='step-item'+(n===S.step?' active':n<S.step?' done':'');
+  });
+  document.querySelectorAll('.step-item.done').forEach(s=>{
+    s.onclick=()=>{S.step=parseInt(s.dataset.step);render();};
+  });
+  el.className=''; void el.offsetWidth; el.className='fade-in';
+  if(S.step===1)renderStep1(el);
+  else if(S.step===2)renderStep2(el);
+  else if(S.step===3)renderStep3(el);
+  else if(S.step===4)renderStep4(el);
+  else if(S.step===5)renderStep5(el);
+  else if(S.step===6)renderStep6(el);
+  else if(S.step===7)renderStep7(el);
+}
+
+// ── STEP 1 ────────────────────────────────────────────────────
+function renderStep1(el){
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-title"><span class="step-badge">STEP 1</span>设定情景分析主题</div>
+    <div class="card-subtitle">请输入您希望分析的情景领域或研究问题。</div>
+
+    <div style="margin-bottom:16px">
+      <label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">情景主题</label>
+      <input type="text" id="topicInput" placeholder="例如：中国城市能源转型 / 全球供应链重构 / 区域水资源安全…" value="${S.topic}" style="font-size:15px;padding:12px 16px"/>
+    </div>
+    <div style="margin-bottom:20px">
+      <label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px">补充说明（可选）</label>
+      <textarea id="topicContext" placeholder="可补充分析背景、时间范围、关注重点等…" style="min-height:70px">${S.topicContext||''}</textarea>
+    </div>
+    <div id="streamArea" style="display:none">
+      <div class="progress-box">
+        <div class="progress-box-label" id="streamBoxLabel">正在分析主题，推荐描述符…</div>
+        <div class="progress-bar-outer"><div class="progress-bar-inner" id="streamBarInner" style="width:60%;animation:barPulse 1.5s ease-in-out infinite"></div></div>
+        <div class="progress-status" id="streamBox">请稍候…</div>
+      </div>
+    </div>
+    <style>@keyframes barPulse{0%,100%{opacity:1}50%{opacity:0.6}}</style>
+    <div style="display:flex;justify-content:flex-end">
+      <button class="btn btn-primary" id="toStep2Btn" onclick="goStep2()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+        生成描述符推荐
+      </button>
+    </div>
+  </div>`;
+}
+
+async function goStep2(){
+  const topic=document.getElementById('topicInput').value.trim();
+  const ctx=document.getElementById('topicContext').value.trim();
+  if(!topic){alert('请输入情景主题');return;}
+  S.topic=topic; S.topicContext=ctx;
+  const btn=document.getElementById('toStep2Btn');
+  btn.disabled=true; btn.innerHTML='<span class="loading-pulse">生成中…</span>';
+  document.getElementById('streamArea').style.display='block';
+  const streamBox=document.getElementById('streamBox');
+  const prompt=`你是CIB情景分析专家。针对主题「${topic}」${ctx?'（背景：'+ctx+'）':''}，推荐6个关键描述符。
+描述符是影响未来发展的关键不确定性维度，要求相互独立、覆盖全面。
+示例（主题：城市能源转型）：
+{"descriptors":[{"letter":"A","name":"能源政策力度","description":"政府推进能源转型的政策强度与连贯性"},{"letter":"B","name":"技术成熟度","description":"清洁能源技术的商业化程度与成本竞争力"}]}
+针对主题「${topic}」生成6个。只返回JSON：`;
+  try {
+    let acc='';
+    await callAI([{role:'user',content:prompt}],600,(full)=>{acc=full;});
+    const data=robustParseJSON(acc);
+    S.descriptors=data.descriptors.map(d=>({id:d.letter,letter:d.letter,name:d.name,description:d.description,selected:true}));
+    S.step=2; render();
+  } catch(e){btn.disabled=false;btn.innerHTML='生成描述符推荐';streamBox.textContent='错误：'+e.message;}
+}
+
+// ── STEP 2 ────────────────────────────────────────────────────
+function renderStep2(el){
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-title"><span class="step-badge">STEP 2</span>选择与自定义描述符</div>
+    <div class="card-subtitle">以下是推荐的描述符，勾选使用，也可添加自定义描述符。建议选5-7个。</div>
+    <div class="desc-grid" id="descGrid">
+      ${S.descriptors.map(d=>`
+      <div class="desc-card ${d.selected?'selected':''}" id="dc_${d.id}" onclick="toggleDesc('${d.id}')">
+        <div class="select-check"></div>
+        <div class="desc-card-header"><div class="desc-letter">${d.letter}</div>
+        <div><div class="desc-card-name">${d.name}</div></div></div>
+        <div class="desc-card-desc">${d.description}</div>
+      </div>`).join('')}
+    </div>
+    <hr class="section-sep"/>
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px;color:var(--ink2)">➕ 添加自定义描述符</div>
+    <div class="custom-desc-row">
+      <input type="text" id="customName" placeholder="描述符名称"/>
+      <input type="text" id="customDesc" placeholder="含义说明"/>
+    </div>
+    <div style="margin-top:10px"><button class="btn btn-secondary btn-sm" onclick="addCustomDesc()">添加</button></div>
+    <hr class="section-sep"/>
+    <div id="selCount" style="font-size:13px;color:var(--ink3);margin-bottom:14px"></div>
+    <div style="display:flex;justify-content:space-between">
+      <button class="btn btn-secondary" onclick="S.step=1;render()">← 返回</button>
+      <button class="btn btn-primary" id="toStep3Btn" onclick="goStep3()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+        确认描述符，自动定义状态
+      </button>
+    </div>
+  </div>`;
+  updateSelCount();
+}
+
+function toggleDesc(id){const d=S.descriptors.find(x=>x.id===id);if(d)d.selected=!d.selected;const c=document.getElementById('dc_'+id);if(c)c.className='desc-card '+(d.selected?'selected':'');updateSelCount();}
+function updateSelCount(){const n=S.descriptors.filter(x=>x.selected).length;const el=document.getElementById('selCount');if(el)el.textContent=`已选${n}个描述符${n<4?'（建议至少4个）':n>8?'（建议不超过8个）':''}`;}
+let customCounter=0;
+function addCustomDesc(){
+  const name=document.getElementById('customName').value.trim(); if(!name){alert('请输入名称');return;}
+  const desc=document.getElementById('customDesc').value.trim();
+  const used=S.descriptors.map(d=>d.letter); let letter='';
+  for(const l of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'){if(!used.includes(l)){letter=l;break;}}
+  if(!letter)letter='X'+(++customCounter);
+  S.descriptors.push({id:letter,letter,name,description:desc||'自定义描述符',selected:true});
+  document.getElementById('customName').value=''; document.getElementById('customDesc').value='';
+  renderStep2(document.getElementById('appContent'));
+}
+
+// ── STEP 3 ────────────────────────────────────────────────────
+async function goStep3(){
+  const sel=S.descriptors.filter(x=>x.selected);
+  if(sel.length<3){alert('请至少选择3个描述符');return;}
+  const btn=document.getElementById('toStep3Btn'); btn.disabled=true; btn.innerHTML='<span class="loading-pulse">正在定义状态…</span>';
+  const card=btn.closest('.card');
+  const pd=document.createElement('div'); pd.style='margin-top:16px';
+  pd.innerHTML='<div class="progress-box"><div class="progress-box-label">正在逐个定义描述符状态</div><div class="progress-bar-outer"><div class="progress-bar-inner" id="varBar"></div></div><div class="progress-status" id="varProgress">准备中…</div></div>';
+  card.insertBefore(pd,btn.parentElement);
+  S.selectedDescs=[];
+  for(let i=0;i<sel.length;i++){
+    const d=sel[i];
+    document.getElementById('varProgress').textContent=`定义状态 ${i+1} / ${sel.length}：${d.name}`;document.getElementById('varBar').style.width=Math.round((i/sel.length)*100)+'%';
+    const prompt=`CIB分析，主题「${S.topic}」，描述符「${d.name}」（${d.description}）。
+定义3个互斥且有实质内容的状态，标签要具体（如"政策强力推动"非"高水平"），说明要有具体特征。
+示例（描述符：技术成熟度）：
+{"variants":[{"label":"技术突破期","desc":"关键技术尚未商业化，成本是传统能源3倍以上，需大量补贴"},{"label":"规模推广期","desc":"主流技术成本接近平价，部分领域已具竞争力，市场开始自驱"},{"label":"全面成熟期","desc":"清洁技术全面低于传统能源成本，市场自发替代，补贴已非必要"}]}
+为「${d.name}」生成。只返回JSON：`;
+    try {
+      let acc=''; await callAI([{role:'user',content:prompt}],400,(full)=>{acc=full;});
+      const data=robustParseJSON(acc); S.selectedDescs.push({...d,variants:data.variants});
+    } catch(e){S.selectedDescs.push({...d,variants:[{label:'状态1（请编辑）',desc:'请手动填写'},{label:'状态2（请编辑）',desc:'请手动填写'},{label:'状态3（请编辑）',desc:'请手动填写'}]});}
+  }
+  S.step=3; render();
+}
+
+function renderStep3(el){
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-title"><span class="step-badge">STEP 3</span>审查与编辑描述符状态</div>
+    <div class="card-subtitle">系统已为每个描述符定义了三个有实质内容的状态，请检查并按需编辑。</div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      ${S.selectedDescs.map((d,di)=>`
+      <div style="border:1px solid var(--border);border-radius:var(--r);padding:18px;background:var(--bg)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div class="desc-letter">${d.letter}</div>
+          <div><div style="font-weight:600;font-size:14px">${d.name}</div>
+          <div style="font-size:12px;color:var(--ink3)">${d.description}</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+          ${d.variants.map((v,vi)=>`
+          <div style="border:1px solid var(--border);border-radius:var(--r);padding:12px;background:var(--paper)">
+            <div class="variant-tag v${vi}" style="margin-bottom:8px;display:block">状态 ${vi+1}</div>
+            <input type="text" value="${v.label}" oninput="S.selectedDescs[${di}].variants[${vi}].label=this.value" style="margin-bottom:6px;font-weight:500;font-size:13px"/>
+            <textarea oninput="S.selectedDescs[${di}].variants[${vi}].desc=this.value" style="min-height:60px;font-size:12px">${v.desc}</textarea>
+          </div>`).join('')}
+        </div>
+      </div>`).join('')}
+    </div>
+    <hr class="section-sep"/>
+    <div style="display:flex;justify-content:space-between">
+      <button class="btn btn-secondary" onclick="S.step=2;render()">← 返回</button>
+      <button class="btn btn-primary" id="toStep4Btn" onclick="goStep4()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+        确认状态，判断影响关系
+      </button>
+    </div>
+  </div>`;
+}
+
+// ── STEP 4 ────────────────────────────────────────────────────
+async function goStep4(){
+  const btn=document.getElementById('toStep4Btn'); btn.disabled=true; btn.innerHTML='<span class="loading-pulse">正在判断影响关系…</span>';
+  const descs=S.selectedDescs;
+  const allPairs=[];
+  for(let i=0;i<descs.length;i++)for(let j=0;j<descs.length;j++)if(i!==j)allPairs.push({from:descs[i],to:descs[j]});
+  const card=btn.closest('.card');
+  const pd=document.createElement('div'); pd.style='margin-top:16px';
+  pd.innerHTML='<div class="progress-box"><div class="progress-box-label">正在判断描述符间直接影响关系</div><div class="progress-bar-outer"><div class="progress-bar-inner" id="infBar"></div></div><div class="progress-status" id="infProgress">准备中…</div></div>';
+  card.insertBefore(pd,btn.parentElement);
+  S.influences=[];
+  const batchSize=8;
+  for(let b=0;b<allPairs.length;b+=batchSize){
+    const batch=allPairs.slice(b,b+batchSize);
+    const _infDone=b+batch.length;document.getElementById('infProgress').textContent=`判断影响关系 ${_infDone} / ${allPairs.length} 对`;document.getElementById('infBar').style.width=Math.round((_infDone/allPairs.length)*100)+'%';
+    const pairsDesc=batch.map(p=>`${p.from.letter}(${p.from.name})→${p.to.letter}(${p.to.name})`).join('\n');
+    const prompt=`CIB分析，主题「${S.topic}」。
+描述符：${descs.map(d=>`${d.letter}.${d.name}：${d.description}`).join('；')}
+判断以下对是否存在直接因果影响（非间接），给出具体机制说明。
+示例：{"influences":[{"from":"A","to":"B","hasInfluence":true,"reason":"能源政策通过补贴和碳税直接改变企业技术路线选择的成本收益"},{"from":"B","to":"A","hasInfluence":false,"reason":"技术成熟度是政策的响应结果，因果方向单向"}]}
+需判断：\n${pairsDesc}\n只返回JSON：`;
+    try {
+      let acc=''; await callAI([{role:'user',content:prompt}],800,(full)=>{acc=full;});
+      const data=robustParseJSON(acc); S.influences.push(...data.influences);
+    } catch(e){batch.forEach(p=>S.influences.push({from:p.from.letter,to:p.to.letter,hasInfluence:false,reason:'解析失败，请手动调整'}));}
+  }
+  S.step=4; render();
+}
+
+function renderStep4(el){
+  const inf=S.influences;
+  const yes=inf.filter(x=>x.hasInfluence).length, no=inf.length-yes;
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-title"><span class="step-badge">STEP 4</span>描述符间影响关系</div>
+    <div class="card-subtitle">系统已判断所有描述符对之间是否存在直接影响关系，并给出具体理由。可手动调整。</div>
+    <div class="notice notice-info">✅ <div>共判断${inf.length}对，<strong>${yes}对存在直接影响</strong>，${no}对无直接影响（${Math.round(yes/inf.length*100)}%有影响）。</div></div>
+    <div class="influence-filter">
+      <button class="filter-btn active" onclick="filterInf(this,'all')">全部(${inf.length})</button>
+      <button class="filter-btn" onclick="filterInf(this,'yes')">有影响(${yes})</button>
+      <button class="filter-btn" onclick="filterInf(this,'no')">无影响(${no})</button>
+    </div>
+    <div class="pair-grid" id="pairGrid">
+      ${inf.map(p=>{
+        const fD=S.selectedDescs.find(d=>d.letter===p.from||d.id===p.from);
+        const tD=S.selectedDescs.find(d=>d.letter===p.to||d.id===p.to);
+        if(!fD||!tD)return '';
+        return `<div class="pair-row ${p.hasInfluence?'has-influence':''}" data-inf="${p.hasInfluence}" data-from="${p.from}" data-to="${p.to}">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px">
+              <span class="pair-badge">${fD.letter}.${fD.name}</span><span style="color:var(--ink3)">→</span>
+              <span class="pair-badge">${tD.letter}.${tD.name}</span>
+              <span class="pair-badge ${p.hasInfluence?'yes':'no'}">${p.hasInfluence?'✓ 有直接影响':'✗ 无直接影响'}</span>
+              <button class="btn btn-xs btn-secondary" onclick="toggleInf('${p.from}','${p.to}',this)">${p.hasInfluence?'改为无影响':'改为有影响'}</button>
+            </div>
+            ${p.reason?`<div class="pair-reason">${p.reason}</div>`:''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <hr class="section-sep"/>
+    <div style="display:flex;justify-content:space-between">
+      <button class="btn btn-secondary" onclick="S.step=3;render()">← 返回</button>
+      <button class="btn btn-primary" id="toStep5Btn" onclick="goStep5()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+        确认影响关系，填写矩阵
+      </button>
+    </div>
+  </div>`;
+}
+
+function filterInf(btn,type){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  document.querySelectorAll('.pair-row').forEach(r=>{const has=r.dataset.inf==='true';r.style.display=type==='all'?'':(type==='yes'?has?'':'none':!has?'':'none');});
+}
+function toggleInf(from,to,btn){
+  const p=S.influences.find(x=>x.from===from&&x.to===to); if(!p)return;
+  p.hasInfluence=!p.hasInfluence;
+  const row=btn.closest('.pair-row'); row.dataset.inf=p.hasInfluence; row.className='pair-row '+(p.hasInfluence?'has-influence':'');
+  const infBadge=Array.from(row.querySelectorAll('.pair-badge')).find(b=>b.textContent.includes('影响'));
+  if(infBadge){infBadge.className='pair-badge '+(p.hasInfluence?'yes':'no');infBadge.textContent=p.hasInfluence?'✓ 有直接影响':'✗ 无直接影响';}
+  btn.textContent=p.hasInfluence?'改为无影响':'改为有影响';
+}
+
+// ── STEP 5 ────────────────────────────────────────────────────
+async function goStep5(){
+  const btn=document.getElementById('toStep5Btn'); btn.disabled=true; btn.innerHTML='<span class="loading-pulse">正在逐对打分…</span>';
+  const descs=S.selectedDescs, hasInfPairs=S.influences.filter(x=>x.hasInfluence);
+  const card=btn.closest('.card');
+  const pd=document.createElement('div'); pd.style='margin-top:16px';
+  pd.innerHTML='<div class="progress-box"><div class="progress-box-label">正在对有影响关系的描述符对逐对打分</div><div class="progress-bar-outer"><div class="progress-bar-inner" id="matBar"></div></div><div class="progress-status" id="matProgress">准备中…</div></div>';
+  card.insertBefore(pd,btn.parentElement);
+  S.matrix={}; S.matrixReasons={};
+  for(let idx=0;idx<hasInfPairs.length;idx++){
+    const p=hasInfPairs[idx];
+    const fD=descs.find(d=>d.letter===p.from||d.id===p.from);
+    const tD=descs.find(d=>d.letter===p.to||d.id===p.to);
+    if(!fD||!tD)continue;
+    document.getElementById('matProgress').textContent=`打分 ${idx+1} / ${hasInfPairs.length}：${fD.name} → ${tD.name}`;document.getElementById('matBar').style.width=Math.round(((idx+1)/hasInfPairs.length)*100)+'%';
+    const v=fD.variants, t=tD.variants;
+    const prompt=`CIB打分。主题：${S.topic}。
+来源：${fD.name}（${fD.description}）状态0=${v[0].label}，状态1=${v[1].label}，状态2=${v[2].label}
+目标：${tD.name}（${tD.description}）状态0=${t[0].label}，状态1=${t[1].label}，状态2=${t[2].label}
+scores[i][j]=来源状态i对目标状态j的影响。+3强烈促进→-3强烈阻碍。语义相符→正分，相悖→负分。
+直接输出JSON：{"scores":[[s00,s01,s02],[s10,s11,s12],[s20,s21,s22]],"reason":"一句话说明"}`;
+    let parsed=null;
+    for(let attempt=0;attempt<2;attempt++){
+      let acc='';
+      try{
+        await callAI([{role:'user',content:prompt}],250,(full)=>{acc=full;});
+        parsed=parseScoresOutput(acc); break;
+      }catch(e){if(attempt===1){const key=`${fD.letter}_${tD.letter}`;S.matrixReasons[key]='请手动填写';for(let fi=0;fi<3;fi++)for(let ti=0;ti<3;ti++)S.matrix[`${fD.letter}_${tD.letter}_${fi}_${ti}`]=0;}}
+    }
+    if(parsed){
+      const key=`${fD.letter}_${tD.letter}`; S.matrixReasons[key]=parsed.reason||'自动打分';
+      (parsed.scores||[]).forEach((row,fi)=>(row||[]).forEach((val,ti)=>{S.matrix[`${fD.letter}_${tD.letter}_${fi}_${ti}`]=Math.max(-3,Math.min(3,parseInt(val)||0));}));
+    }
+  }
+  S.step=5; render();
+}
+
+function renderStep5(el){
+  const descs=S.selectedDescs, inf=S.influences;
+  let matHTML=`<table class="cib-matrix"><thead><tr><th class="corner">行=来源状态<br>列=目标状态</th>`;
+  descs.forEach(d=>d.variants.forEach((v,vi)=>{matHTML+=`<th class="col-header"><span class="cname">${d.letter}</span><br>${v.label}</th>`;}));
+  matHTML+='</tr></thead><tbody>';
+  descs.forEach((rowD)=>{
+    rowD.variants.forEach((rv,rvi)=>{
+      matHTML+='<tr>';
+      if(rvi===0)matHTML+=`<th class="row-header" rowspan="3">${rowD.letter}.${rowD.name}<span class="cname">${rowD.description}</span></th>`;
+      descs.forEach((colD)=>{
+        if(rowD.id===colD.id){if(rvi===0)matHTML+=`<td class="ci-diag" colspan="3" rowspan="3">—</td>`;return;}
+        const hasInfEntry=inf.find(x=>(x.from===rowD.letter||x.from===rowD.id)&&(x.to===colD.letter||x.to===colD.id)&&x.hasInfluence);
+        colD.variants.forEach((cv,cvi)=>{
+          if(!hasInfEntry){if(cvi===0&&rvi===0)matHTML+=`<td class="ci-null" colspan="3" rowspan="3">·</td>`;return;}
+          const val=S.matrix[`${rowD.letter}_${colD.letter}_${rvi}_${cvi}`]??0;
+          const cls=val>0?'pos':val<0?'neg':'zero';
+          matHTML+=`<td class="ci-cell"><input type="number" class="ci-input ${cls}" min="-3" max="3" step="1" value="${val}" title="${rowD.name}【${rv.label}】→${colD.name}【${cv.label}】" onchange="updateCell('${rowD.letter}','${colD.letter}',${rvi},${cvi},this)"/></td>`;
+        });
+      });
+      matHTML+='</tr>';
+    });
+  });
+  matHTML+='</tbody></table>';
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-title"><span class="step-badge">STEP 5</span>CIB 交叉影响矩阵</div>
+    <div class="card-subtitle">已逐对填写分数，可直接点击单元格修改（-3强烈阻碍 ~ +3强烈促进）。</div>
+    <div class="notice notice-info">📖 <div><strong>读法：</strong>行=来源描述符某状态；列=目标描述符某状态。分数代表"当来源处于该状态时，对目标该状态出现的促进/阻碍程度"。</div></div>
+    <div class="matrix-wrap">${matHTML}</div>
+    <div class="matrix-legend">图例：
+      <span class="legend-item"><span class="legend-box" style="background:rgba(45,122,78,0.2)"></span>正值（促进）</span>
+      <span class="legend-item"><span class="legend-box" style="background:rgba(196,82,26,0.15)"></span>负值（阻碍）</span>
+      <span class="legend-item"><span class="legend-box" style="background:var(--bg2)"></span>无影响</span>
+    </div>
+    <hr class="section-sep"/>
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px">打分依据</div>
+    <div style="display:grid;gap:7px">
+      ${Object.entries(S.matrixReasons).map(([k,r])=>{
+        const [fid,tid]=k.split('_');
+        const fD=descs.find(d=>d.letter===fid),tD=descs.find(d=>d.letter===tid);
+        if(!fD||!tD||!r)return '';
+        return `<div style="padding:8px 12px;border:1px solid var(--border2);border-radius:var(--r);font-size:12px;color:var(--ink2);background:var(--bg)"><strong>${fD.letter}.${fD.name} → ${tD.letter}.${tD.name}</strong>：${r}</div>`;
+      }).join('')}
+    </div>
+    <hr class="section-sep"/>
+    <div style="display:flex;justify-content:space-between">
+      <button class="btn btn-secondary" onclick="S.step=4;render()">← 返回</button>
+      <button class="btn btn-primary" id="toStep6Btn" onclick="goStep6()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+        生成一致性情景
+      </button>
+    </div>
+  </div>`;
+}
+
+function updateCell(from,to,fi,ti,input){
+  let v=parseInt(input.value)||0; v=Math.max(-3,Math.min(3,v)); input.value=v;
+  S.matrix[`${from}_${to}_${fi}_${ti}`]=v;
+  input.className='ci-input '+(v>0?'pos':v<0?'neg':'zero');
+}
+
+// ── STEP 6 ────────────────────────────────────────────────────
+async function goStep6(){
+  const btn=document.getElementById('toStep6Btn'); btn.disabled=true; btn.innerHTML='<span class="loading-pulse">计算一致性情景…</span>';
+  const descs=S.selectedDescs, N=descs.length, V=3;
+  const mat=[];
+  for(let i=0;i<N;i++){mat.push([]);for(let j=0;j<N;j++){mat[i].push([]);for(let vi=0;vi<V;vi++){mat[i][j].push([]);for(let vj=0;vj<V;vj++){if(i===j){mat[i][j][vi].push(0);continue;}mat[i][j][vi].push(S.matrix[`${descs[i].letter}_${descs[j].letter}_${vi}_${vj}`]??0);}}}}
+  function checkConsistency(config){
+    let totalScore=0,maxInc=0;
+    for(let j=0;j<N;j++){const bal=[0,0,0];for(let i=0;i<N;i++){if(i===j)continue;for(let vj=0;vj<V;vj++)bal[vj]+=mat[i][j][config[i]][vj];}const inc=Math.max(...bal)-bal[config[j]];if(inc>maxInc)maxInc=inc;totalScore+=bal[config[j]];}
+    return{totalScore,maxInc};
+  }
+  const total=Math.pow(V,N),results=[];
+  for(let k=0;k<total;k++){let tmp=k;const config=[];for(let i=0;i<N;i++){config.push(tmp%V);tmp=Math.floor(tmp/V);}const{totalScore,maxInc}=checkConsistency(config);results.push({config,totalScore,maxInc});}
+  results.sort((a,b)=>a.maxInc-b.maxInc||b.totalScore-a.totalScore);
+  let top=results.filter(r=>r.maxInc<=1).slice(0,8);
+  if(top.length<3)top=results.slice(0,6);
+  S.scenarios=top.map((r,i)=>({...r,score:r.totalScore,title:'情景'+(i+1),story:'生成中…'}));
+  S.step=6; render();
+  // 逐个生成情景描述
+  for(let idx=0;idx<S.scenarios.length;idx++){
+    const sc=S.scenarios[idx];
+    const stateDesc=descs.map((d,i)=>`${d.letter}.${d.name}：${d.variants[sc.config[i]].label}（${d.variants[sc.config[i]].desc}）`).join('\n');
+    const prompt=`情景规划专家，主题「${S.topic}」。情景状态：\n${stateDesc}\n写120-150字情景描述：以2035年为背景，描述具体图景，解释各状态如何相互强化，点出核心特征。只返回JSON：{"title":"5字以内标题","story":"描述正文"}`;
+    try{
+      const text=await callAI([{role:'user',content:prompt}],400);
+      const data=robustParseJSON(text);
+      S.scenarios[idx].title=data.title||('情景'+(idx+1)); S.scenarios[idx].story=data.story||'';
+    }catch(e){S.scenarios[idx].story='（描述生成失败）';}
+    const card=document.getElementById('sc_card_'+idx);
+    if(card)card.outerHTML=renderOneScenario(S.scenarios[idx],idx,descs);
+  }
+  const spb=document.getElementById('storyProgressBox');
+  if(spb)spb.style.display='none';
+}
+
+function renderOneScenario(sc,idx,descs){
+  return `<div class="scenario-card" id="sc_card_${idx}">
+    <div class="scenario-header">
+      <div class="scenario-num">${idx+1}</div>
+      <div><div class="scenario-title">${sc.title||('情景'+(idx+1))}</div>
+      <div style="font-size:11px;color:var(--ink3)">不一致度${sc.maxInc??'—'}</div></div>
+      <div class="scenario-score">得分${sc.score}</div>
+    </div>
+    <div class="scenario-body">
+      ${descs.map((d,i)=>`<div class="state-row"><span class="state-desc">${d.letter}.${d.name}</span><span class="state-val v${sc.config[i]}">${d.variants[sc.config[i]]?.label||''}</span></div>`).join('')}
+      <div class="scenario-story">${sc.story||'生成中…'}</div>
+    </div>
+  </div>`;
+}
+
+function renderStep6(el){
+  const descs=S.selectedDescs,scenarios=S.scenarios;
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-title"><span class="step-badge">STEP 6</span>一致性情景结果</div>
+    <div class="card-subtitle">共筛选出${scenarios.length}个内部一致的情景，正在逐个生成深度描述…</div>
+    <div class="notice notice-info">🎯 <div>一致性情景：每个描述符的状态与其他描述符的影响平衡相吻合，不存在显著内部矛盾。得分越高一致性越强。</div></div>
+    <div class="progress-box" id="storyProgressBox" style="margin-bottom:14px">
+      <div class="progress-box-label">正在生成情景描述</div>
+      <div class="progress-bar-outer"><div class="progress-bar-inner" id="storyBar"></div></div>
+      <div class="progress-status" id="storyStreamBox">准备中…</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-secondary" onclick="sortSc('score')">按一致性得分</button>
+      <button class="btn btn-sm btn-secondary" onclick="sortSc('variety')">按多样性</button>
+    </div>
+    <div class="scenario-grid" id="scenarioGrid">${scenarios.map((sc,i)=>renderOneScenario(sc,i,descs)).join('')}</div>
+    <hr class="section-sep"/>
+    <div style="display:flex;justify-content:space-between">
+      <button class="btn btn-secondary" onclick="S.step=5;render()">← 返回修改矩阵</button>
+      <button class="btn btn-primary" id="toStep7Btn" onclick="S.step=7;render()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+        演替路径分析 →
+      </button>
+    </div>
+  </div>`;
+}
+
+function sortSc(by){
+  if(by==='score')S.scenarios.sort((a,b)=>b.score-a.score);
+  else{const sorted=[S.scenarios[0]],rem=S.scenarios.slice(1);while(rem.length>0){let mx=0,mi=0;rem.forEach((sc,i)=>{const mn=Math.min(...sorted.map(s=>s.config.filter((v,j)=>v!==sc.config[j]).length));if(mn>mx){mx=mn;mi=i;}});sorted.push(rem.splice(mi,1)[0]);}S.scenarios=sorted;}
+  const g=document.getElementById('scenarioGrid'); if(g)g.innerHTML=S.scenarios.map((sc,i)=>renderOneScenario(sc,i,S.selectedDescs)).join('');
+}
+
+// ── STEP 7：演替路径分析 ──────────────────────────────────────
+function renderStep7(el){
+  const descs=S.selectedDescs, scenarios=S.scenarios;
+
+  // 如果还没选过，用默认值
+  if(S.currentScenarioIdx<0) S.currentScenarioIdx=0;
+  if(S.idealScenarioIdx<0) S.idealScenarioIdx=scenarios.length>1?1:0;
+
+  el.innerHTML=`
+  <div class="card">
+    <div class="card-title"><span class="step-badge">STEP 7</span>演替路径分析</div>
+    <div class="card-subtitle">基于 CIB 干预分析方法，识别从当前现实状态向理想状态转变的最优路径。</div>
+    <div class="notice notice-info">📖 <div><strong>方法说明：</strong>CIB干预分析将每个描述符状态的"强制调整"视为一种干预。通过模拟在每个描述符上施加干预后的情景组合变化，找出最能推动系统向理想情景演进的关键描述符及其调整顺序。</div></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;font-size:11px">当前</span>现实状态（起点情景）
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px" id="currentScenarioSelect">
+          ${scenarios.map((sc,i)=>`
+          <label style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border:1px solid ${S.currentScenarioIdx===i?'var(--accent)':'var(--border)'};border-radius:var(--r);cursor:pointer;background:${S.currentScenarioIdx===i?'rgba(42,92,143,0.06)':'var(--bg)'};transition:all .15s" onclick="selectScenario('current',${i})">
+            <input type="radio" name="currentSc" ${S.currentScenarioIdx===i?'checked':''} style="margin-top:2px;accent-color:var(--accent)"/>
+            <div><div style="font-weight:600;font-size:13px">${sc.title||('情景'+(i+1))}</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:3px">${descs.map((d,j)=>`${d.letter}:${d.variants[sc.config[j]]?.label}`).join(' / ')}</div></div>
+          </label>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;font-size:11px">目标</span>理想状态（终点情景）
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px" id="idealScenarioSelect">
+          ${scenarios.map((sc,i)=>`
+          <label style="display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border:1px solid ${S.idealScenarioIdx===i?'var(--green)':'var(--border)'};border-radius:var(--r);cursor:pointer;background:${S.idealScenarioIdx===i?'var(--blue-light)':'var(--bg)'};transition:all .15s" onclick="selectScenario('ideal',${i})">
+            <input type="radio" name="idealSc" ${S.idealScenarioIdx===i?'checked':''} style="margin-top:2px;accent-color:var(--accent)"/>
+            <div><div style="font-weight:600;font-size:13px">${sc.title||('情景'+(i+1))}</div>
+            <div style="font-size:11px;color:var(--ink3);margin-top:3px">${descs.map((d,j)=>`${d.letter}:${d.variants[sc.config[j]]?.label}`).join(' / ')}</div></div>
+          </label>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    ${S.transitionAnalysis ? renderTransitionResult() : ''}
+
+    <div id="transitionStreamArea" style="display:none;margin-bottom:16px">
+      <div class="progress-box">
+        <div class="progress-box-label">正在计算最优演替路径</div>
+        <div class="progress-bar-outer"><div class="progress-bar-inner" id="transBar"></div></div>
+        <div class="progress-status" id="transProgress">初始化中…</div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between">
+      <button class="btn btn-secondary" onclick="S.step=6;render()">← 返回情景</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary" onclick="exportResults()">导出全部结果</button>
+        <button class="btn btn-primary" id="analyzeTransBtn" onclick="runTransitionAnalysis()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+          ${S.transitionAnalysis?'重新分析':'开始演替分析'}
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function selectScenario(type, idx){
+  if(type==='current') S.currentScenarioIdx=idx;
+  else S.idealScenarioIdx=idx;
+  S.transitionAnalysis=null;
+  renderStep7(document.getElementById('appContent'));
+}
+
+// ── 核心演替分析算法 ─────────────────────────────────────────
+// 基于CIB干预分析：逐个模拟"强制某描述符变为目标状态"后的情景组合
+// 找出最能缩小与理想情景距离的干预点，形成贪心路径
+function computeInterventionEffect(forcedDescIdx, forcedVariantIdx) {
+  const descs=S.selectedDescs, N=descs.length, V=3;
+  // 构建4D矩阵
+  const mat=[];
+  for(let i=0;i<N;i++){mat.push([]);for(let j=0;j<N;j++){mat[i].push([]);for(let vi=0;vi<V;vi++){mat[i][j].push([]);for(let vj=0;vj<V;vj++){if(i===j){mat[i][j][vi].push(0);continue;}mat[i][j][vi].push(S.matrix[`${descs[i].letter}_${descs[j].letter}_${vi}_${vj}`]??0);}}}}
+
+  // 在强制干预下重新计算一致性（被干预的描述符固定为指定状态）
+  function checkWithIntervention(config){
+    let totalScore=0, maxInc=0;
+    for(let j=0;j<N;j++){
+      if(j===forcedDescIdx){
+        // 被干预的描述符：只看被强制状态的平衡
+        const bal=[0,0,0];
+        for(let i=0;i<N;i++){if(i===j)continue;for(let vj=0;vj<V;vj++)bal[vj]+=mat[i][j][config[i]][vj];}
+        totalScore+=bal[forcedVariantIdx];
+        // 不计入不一致度（干预覆盖了不一致性）
+      } else {
+        const bal=[0,0,0];
+        for(let i=0;i<N;i++){if(i===j)continue;for(let vj=0;vj<V;vj++)bal[vj]+=mat[i][j][config[i]][vj];}
+        const inc=Math.max(...bal)-bal[config[j]];
+        if(inc>maxInc)maxInc=inc; totalScore+=bal[config[j]];
+      }
+    }
+    return{totalScore,maxInc};
+  }
+
+  // 枚举所有配置（强制干预描述符固定）
+  const results=[];
+  const total=Math.pow(V,N);
+  for(let k=0;k<total;k++){
+    let tmp=k; const config=[];
+    for(let i=0;i<N;i++){config.push(tmp%V);tmp=Math.floor(tmp/V);}
+    config[forcedDescIdx]=forcedVariantIdx; // 强制
+    const{totalScore,maxInc}=checkWithIntervention(config);
+    if(maxInc<=1) results.push({config,totalScore,maxInc});
+  }
+  results.sort((a,b)=>a.maxInc-b.maxInc||b.totalScore-a.totalScore);
+  return results.slice(0,5);
+}
+
+// 计算两个情景config的"距离"（不同描述符状态数量）
+function scenarioDistance(configA, configB){ return configA.filter((v,i)=>v!==configB[i]).length; }
+
+async function runTransitionAnalysis(){
+  if(S.currentScenarioIdx===S.idealScenarioIdx){alert('现实情景和理想情景不能相同');return;}
+  const btn=document.getElementById('analyzeTransBtn'); btn.disabled=true; btn.innerHTML='<span class="loading-pulse">分析中…</span>';
+  document.getElementById('transitionStreamArea').style.display='block';
+  document.getElementById('transBar').style.width='0%';
+
+  const descs=S.selectedDescs;
+  const currentSc=S.scenarios[S.currentScenarioIdx];
+  const idealSc=S.scenarios[S.idealScenarioIdx];
+  const currentConfig=[...currentSc.config];
+  const idealConfig=[...idealSc.config];
+
+  // 找出需要改变的描述符
+  const diffDescs=[];
+  for(let i=0;i<descs.length;i++){
+    if(currentConfig[i]!==idealConfig[i]) diffDescs.push({idx:i,desc:descs[i],from:currentConfig[i],to:idealConfig[i]});
+  }
+
+  // 对每个需要改变的描述符，计算干预效果（向目标状态施加干预后，情景组合向理想情景靠近了多少）
+  document.getElementById('transProgress').textContent='计算每个描述符的干预效果…';document.getElementById('transBar').style.width='30%';
+  const interventionResults=[];
+  for(const diff of diffDescs){
+    const interventionPortfolio=computeInterventionEffect(diff.idx, diff.to);
+    // 计算干预后情景组合与理想情景的平均距离
+    const avgDist = interventionPortfolio.length>0
+      ? interventionPortfolio.reduce((sum,sc)=>sum+scenarioDistance(sc.config,idealConfig),0)/interventionPortfolio.length
+      : descs.length;
+    // 也看干预后有多少情景包含其他目标状态
+    const idealAlignment = interventionPortfolio.filter(sc=>scenarioDistance(sc.config,idealConfig)<=1).length;
+    interventionResults.push({...diff, avgDist, idealAlignment, interventionPortfolio});
+  }
+  // 按"更能靠近理想情景"排序：理想对齐数高→平均距离小
+  interventionResults.sort((a,b)=>b.idealAlignment-a.idealAlignment||a.avgDist-b.avgDist);
+
+  // 构建贪心路径：每步选当前最有效的干预
+  const path=[];
+  let currentConfig2=[...currentConfig];
+  const remaining=[...interventionResults];
+  while(remaining.length>0&&scenarioDistance(currentConfig2,idealConfig)>0){
+    remaining.sort((a,b)=>b.idealAlignment-a.idealAlignment||a.avgDist-b.avgDist);
+    const best=remaining.shift();
+    path.push(best);
+    currentConfig2[best.idx]=best.to;
+  }
+
+  // 用AI生成路径解读
+  document.getElementById('transProgress').textContent='生成演替路径解读…';document.getElementById('transBar').style.width='70%';
+  const pathDesc=path.map((step,i)=>{
+    const d=step.desc;
+    return `步骤${i+1}：调整「${d.name}」从「${d.variants[step.from].label}」→「${d.variants[step.to].label}」（干预后有${step.idealAlignment}个情景靠近理想状态，平均距离${step.avgDist.toFixed(1)}）`;
+  }).join('\n');
+
+  const prompt=`你是CIB情景分析专家，主题「${S.topic}」。
+
+现实情景（起点）：${descs.map((d,i)=>`${d.letter}.${d.name}:${d.variants[currentSc.config[i]].label}`).join('，')}
+理想情景（终点）：${descs.map((d,i)=>`${d.letter}.${d.name}:${d.variants[idealSc.config[i]].label}`).join('，')}
+
+基于CIB干预分析计算出的推荐演替路径：
+${pathDesc}
+
+请为每个步骤生成：
+1. 该步骤为何是优先干预点（从影响关系角度解释）
+2. 具体的政策/行动建议
+3. 预期的连锁效应（调整这个描述符后会带动哪些其他描述符变化）
+
+只返回JSON：{"steps":[{"step":1,"why":"为何优先","action":"具体行动建议","cascade":"预期连锁效应"},...],"summary":"整体路径总结（100字）"}`;
+
+  try{
+    let acc='';
+    await callAI([{role:'user',content:prompt}],1000,(full)=>{acc=full;});document.getElementById('transBar').style.width='100%';
+    const data=robustParseJSON(acc);
+    S.transitionAnalysis={path, interventionResults, pathInterpretation:data, currentSc, idealSc};
+  }catch(e){
+    S.transitionAnalysis={path, interventionResults, pathInterpretation:null, currentSc, idealSc};
+  }
+
+  document.getElementById('transitionStreamArea').style.display='none';
+  btn.disabled=false; btn.innerHTML='重新分析';
+  renderStep7(document.getElementById('appContent'));
+}
+
+function renderTransitionResult(){
+  const ta=S.transitionAnalysis;
+  if(!ta)return '';
+  const descs=S.selectedDescs;
+  const interp=ta.pathInterpretation;
+  const currentSc=ta.currentSc, idealSc=ta.idealSc;
+
+  const stepsHTML=ta.path.map((step,i)=>{
+    const d=step.desc;
+    const ai=interp?.steps?.[i];
+    return `
+    <div style="display:flex;gap:16px;padding:16px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg);position:relative">
+      <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font);font-weight:700;font-size:16px;flex-shrink:0">${i+1}</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <span style="font-weight:600;font-size:14px">${d.name}</span>
+          <span class="state-val v${step.from}">${d.variants[step.from].label}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink3)" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+          <span class="state-val v${step.to}">${d.variants[step.to].label}</span>
+          <span style="font-size:11px;color:var(--ink3);margin-left:auto">干预后${step.idealAlignment}个情景靠近理想态</span>
+        </div>
+        ${ai?`
+        <div style="display:grid;gap:6px;font-size:12px">
+          <div style="padding:8px 10px;background:var(--blue-light);border-radius:4px;border-left:3px solid var(--accent)"><strong>为何优先：</strong>${ai.why||''}</div>
+          <div style="padding:8px 10px;background:#f0fdf4;border-radius:4px;border-left:3px solid var(--green)"><strong>行动建议：</strong>${ai.action||''}</div>
+          <div style="padding:8px 10px;background:#fff7ed;border-radius:4px;border-left:3px solid #ea580c"><strong>连锁效应：</strong>${ai.cascade||''}</div>
+        </div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // 情景对比表
+  const compHTML=`
+  <div style="overflow-x:auto;margin-bottom:16px">
+    <table style="border-collapse:collapse;width:100%;font-size:12px">
+      <thead><tr>
+        <th style="padding:8px 12px;background:var(--bg2);border:1px solid var(--border);text-align:left">描述符</th>
+        <th style="padding:8px 12px;background:rgba(42,92,143,0.1);border:1px solid var(--border);text-align:center">现实情景</th>
+        <th style="padding:8px 12px;background:rgba(45,122,78,0.1);border:1px solid var(--border);text-align:center">理想情景</th>
+        <th style="padding:8px 12px;background:var(--bg2);border:1px solid var(--border);text-align:center">是否需要改变</th>
+      </tr></thead>
+      <tbody>${descs.map((d,i)=>{
+        const fc=currentSc.config[i], fi=idealSc.config[i];
+        const changed=fc!==fi;
+        return `<tr>
+          <td style="padding:7px 12px;border:1px solid var(--border);font-weight:500">${d.letter}.${d.name}</td>
+          <td style="padding:7px 12px;border:1px solid var(--border);text-align:center"><span class="state-val v${fc}">${d.variants[fc].label}</span></td>
+          <td style="padding:7px 12px;border:1px solid var(--border);text-align:center"><span class="state-val v${fi}">${d.variants[fi].label}</span></td>
+          <td style="padding:7px 12px;border:1px solid var(--border);text-align:center">${changed?'<span style="color:var(--accent);font-weight:500">● 需要调整</span>':'<span style="color:var(--accent)">✓ 已一致</span>'}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+  </div>`;
+
+  return `
+  <div style="margin-top:20px">
+    <div style="font-size:15px;font-weight:600;font-family:var(--font);margin-bottom:14px">演替分析结果</div>
+    ${interp?.summary?`<div style="padding:14px 16px;background:rgba(42,92,143,0.08);border:1px solid rgba(42,92,143,0.2);border-radius:var(--r);font-size:13px;color:var(--ink2);margin-bottom:16px;line-height:1.7"><strong>路径总结：</strong>${interp.summary}</div>`:''}
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--ink2)">情景对比</div>
+    ${compHTML}
+    <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--ink2)">推荐演替路径（共${ta.path.length}步）</div>
+    <div style="display:flex;flex-direction:column;gap:10px">${stepsHTML}</div>
+  </div>`;
+}
+
+function exportResults(){
+  const lines=[`CIB情景分析报告\n主题：${S.topic}\n生成时间：${new Date().toLocaleString('zh-CN')}\n`,'='.repeat(40)];
+  lines.push('\n【描述符与状态定义】\n');
+  S.selectedDescs.forEach(d=>{lines.push(`${d.letter}.${d.name}（${d.description}）`);d.variants.forEach((v,i)=>lines.push(`  状态${i+1}：${v.label} — ${v.desc}`));lines.push('');});
+  lines.push('='.repeat(40),'\n【影响关系】\n');
+  S.influences.filter(x=>x.hasInfluence).forEach(p=>{const fD=S.selectedDescs.find(d=>d.letter===p.from),tD=S.selectedDescs.find(d=>d.letter===p.to);if(fD&&tD)lines.push(`${fD.letter}.${fD.name}→${tD.letter}.${tD.name}：${p.reason||''}`)});
+  lines.push('\n'+'='.repeat(40),'\n【一致性情景】\n');
+  S.scenarios.forEach((sc,i)=>{lines.push(`情景${i+1}：${sc.title}（得分${sc.score}）`);S.selectedDescs.forEach((d,j)=>lines.push(`  ${d.letter}.${d.name}:${d.variants[sc.config[j]]?.label||''}`));if(sc.story)lines.push(`\n  ${sc.story}`);lines.push('');});
+  if(S.transitionAnalysis){
+    const ta=S.transitionAnalysis;
+    lines.push('='.repeat(40),'\n【演替路径分析】\n');
+    lines.push(`现实情景：${ta.currentSc.title}  →  理想情景：${ta.idealSc.title}\n`);
+    if(ta.pathInterpretation?.summary)lines.push('路径总结：'+ta.pathInterpretation.summary+'\n');
+    ta.path.forEach((step,i)=>{
+      const d=step.desc, ai=ta.pathInterpretation?.steps?.[i];
+      lines.push(`步骤${i+1}：${d.name} ${d.variants[step.from].label}→${d.variants[step.to].label}`);
+      if(ai){lines.push(`  为何优先：${ai.why||''}`);lines.push(`  行动建议：${ai.action||''}`);lines.push(`  连锁效应：${ai.cascade||''}`);}
+      lines.push('');
+    });
+  }
+  const blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download=`CIB分析_${S.topic.slice(0,10)}_${Date.now()}.txt`; a.click();
+}
+
+// ── 全局暴露 ──────────────────────────────────────────────────
+window.toggleDesc=toggleDesc; window.addCustomDesc=addCustomDesc;
+window.filterInf=filterInf; window.toggleInf=toggleInf;
+window.updateCell=updateCell; window.sortSc=sortSc;
+window.selectScenario=selectScenario; window.runTransitionAnalysis=runTransitionAnalysis;
+window.exportResults=exportResults;
+window.goStep2=goStep2; window.goStep3=goStep3; window.goStep4=goStep4;
+window.goStep5=goStep5; window.goStep6=goStep6;
+window.S=S;
+// App initialized — cover page shown by default, startApp() triggers render()
+</script>
+</body>
+</html>
